@@ -42,6 +42,14 @@ a {
   }
 }
 
+button {
+  height:40px;
+  cursor: pointer;
+  background: $primary;
+  border:none;
+  color:#fff;
+}
+
 .fade {
   &-enter {
     animation: fade 200ms ease-out both;

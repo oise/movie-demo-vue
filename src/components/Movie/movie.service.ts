@@ -1,7 +1,5 @@
 import movieData from "../../assets/sample-data.json";
 
-//Ideally, these interfaces would sit in separate files as they would we used across multiple places
-
 interface Genre {
   id: number;
   title: string;
@@ -24,19 +22,35 @@ export interface Movie {
 
 export class MovieService {
 
+  private readonly baseUrl: string;
+
+  constructor() {
+    this.baseUrl = `v1/movies`;
+  }
+
   /**
    *
    * @param page - Current page data is needed for
    * @param size -  Size of data per page
-   * @param search - Optional search params matching name of movie.
-   * @param genre
+   * @param search - Optional movie title or actors name
+   * @param genreId - Optional GenreId
    */
-  static async get(page: number = 1, size: number = 10, search?: string, genre?: number): Promise<any> {
-    let filteredResult = movieData;
-    if(search) {
-      return movieData.filter(movie => movie.title.search(new RegExp(search)));
+  async get(page: number = 1, size: number = 10, search?: string, genreId?: number): Promise<any> {
+    //Constructed Payload
+    const url = `${this.baseUrl}?page=${page}&size=${size}`;
+
+    console.log('genreId', genreId, search)
+
+    if (search !== '') {
+      console.log("---- Search + Filter ----", `${url}&search=${search}`);
+      return new Promise(resolve => resolve([...movieData].splice(0,2)));
     }
 
-    return new Promise(resolve => resolve(filteredResult));
+    if (genreId) {
+      console.log("---- Search + Filter ----", `${url}&genreId=${genreId}`);
+      return new Promise(resolve => resolve([...movieData].splice(0,2)));
+    }
+
+    return new Promise(resolve => resolve(movieData));
   }
 }

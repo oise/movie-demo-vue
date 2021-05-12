@@ -2,15 +2,15 @@
     <div class="movie-item-wrapper" @mouseenter="hover = true" @mouseleave="hover = false">
         <div v-if="movie.isSeries" class="movie-item-series-tag">series</div>
         <div class="movie-item-card">
-            <img :src="movie.poster" :alt="`poster for ${movie.title}`">
+            <img :src="movie.poster" :alt="`poster for ${movie.title}`"/>
             <transition name="fade">
                 <div v-if="hover" class="movie-item-genre">
-                    <a v-for="genre of movie.genre" :key="genre.id" :href="`genre/${genre.id}`">{{genre.title}}</a>
+                    <a v-for="genre of movie.genre" :key="genre.id" @click="handleSearchByGenre(genre.id)">{{ genre.title }}</a>
                 </div>
             </transition>
         </div>
-        <div class="movie-item-name">{{movie.title}}</div>
-        <div class="movie-item-date">{{friendlyDate()}}</div>
+        <div class="movie-item-name">{{ movie.title }}</div>
+        <div class="movie-item-date">{{ friendlyDate() }}</div>
     </div>
 </template>
 
@@ -20,11 +20,12 @@
 
   export default defineComponent({
     name: "MovieItem",
+    emits: ["search-by-genre"],
     props: {
       movie: Object as PropType<Movie>
     },
 
-    setup(props) {
+    setup(props, { emit }) {
       const hover = ref<boolean>(false);
 
       const friendlyDate = () => {
@@ -32,7 +33,11 @@
         return `${date?.getDate()}-${date?.getMonth()}-${date?.getFullYear()}`;
       };
 
-      return { friendlyDate, hover };
+      const handleSearchByGenre = (id: number) => {
+        emit("search-by-genre", id);
+      };
+
+      return { friendlyDate, handleSearchByGenre, hover };
     }
   });
 </script>

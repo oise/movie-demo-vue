@@ -1,9 +1,10 @@
 <template>
-    <div class="movie-search">
-        <input type="text" placeholder="Search movie title"/>
-    </div>
+    <form class="movie-search" @submit="doSearch">
+        <input v-model="search" type="text" placeholder="Search movie title"/>
+        <button type="button" class="movie-search-button" @click="reset">Reset</button>
+    </form>
     <div class="movie-list-grid">
-        <MovieItem v-for="movie of movies" :key="movie.id" :movie="movie"/>
+        <MovieItem v-for="movie of movies" :key="movie.id" :movie="movie" @search-by-genre="doSearchByGenre"/>
     </div>
 </template>
 
@@ -17,24 +18,50 @@
     components: { MovieItem },
 
     setup() {
-      let movies = ref<Movie[]>([]);
+      const movieService = new MovieService();
 
-      let search = ref<string>();
+      let filteredMovies = ref<Movie[]>([]);
 
-      let genre = ref<number>();
+      let search = ref<string>("");
 
+      let genreId = ref<number>();
 
       const getMovies = async () => {
-        movies.value = await MovieService.get(1, 10, search.value, genre.value);
+        filteredMovies.value = await movieService.get(1, 10, search.value, genreId.value);
+      };
+
+      /**
+       * Handles search
+       * In an idea situation, this should also update the HistoryState via
+       * the router.
+       * @param event
+       */
+      const doSearch = (event: Event) => {
+        event.preventDefault();
+        getMovies();
+      };
+
+
+      const doSearchByGenre = (id: number) => {
+        genreId.value = id;
+        getMovies();
+      };
+
+      const reset = () => {
+        genreId.value = undefined;
+        search.value = "";
+        getMovies();
       };
 
       onMounted(getMovies);
 
-
       return {
-        movies,
+        movies: filteredMovies,
         search,
-        genre,
+        genreId,
+        reset,
+        doSearch,
+        doSearchByGenre,
         getMovies
       };
     }
@@ -56,7 +83,11 @@
             height: 40px;
             padding: 0 16px;
             text-align: center;
-            color:$font-color
+            color: $font-color
+        }
+
+        &-button {
+            margin-left:8px;
         }
     }
 
@@ -67,5 +98,6 @@
         grid-template-columns: repeat(auto-fill, minmax($columnWidth, 1fr));
         height: 300px;
     }
+
 
 </style>
