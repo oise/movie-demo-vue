@@ -1,5 +1,3 @@
 @import "colors";
 
-@mixin box-shadow {
-  box-shadow: 0 1px 4px 0px lighten($medium-gray, 10px);
-}
+$columnWidth: 150px;

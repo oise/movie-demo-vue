@@ -8,7 +8,7 @@
   export default {
     name: "Movie",
     components: {
-      MovieList: MovieList
+      MovieList
     }
   };
 </script>
